@@ -77,22 +77,18 @@ public class MangaKakalotHTMLParser {
 				throw new LogException(
 						"No se ha encontrado el elemento UL donde está el listado de capítulos del manga.");
 			}
-			final Elements rows = chaptersList.select(JSOUPManager.DIV_TAG_NAME);
+			final Elements rows = chaptersList.getElementsByAttributeValue(JSOUPManager.BODY_CLASS_ATTRIBUTE, "row");//.select(JSOUPManager.DIV_TAG_NAME);
 			if (rows == null) {
 				throw new LogException("No se han encontrado resultados para la búsqueda realizada.");
 			}
 			for (int i = 0; i < rows.size(); i++) {
-				final Element divElement = JSOUPManager.getElementByAttributeValue(rows.get(i),
-						JSOUPManager.DIV_TAG_NAME, JSOUPManager.BODY_CLASS_ATTRIBUTE, "row");
-				if (divElement != null) {
-					final Chapter chapter = this.parseChapter(divElement);
+					final Chapter chapter = this.parseChapter(rows.get(i));
 					if (chapter != null) {
 						chapters.add(chapter);
 					} else {
 						System.out.println(
-								"No se ha obtenido información válida de este capítulo. \n" + divElement.toString());
+								"No se ha obtenido información válida de este capítulo. \n" + rows.get(i).toString());
 					}
-				}
 			}
 			Collections.sort(chapters);
 		} catch (Exception ex) {

@@ -1,6 +1,5 @@
 package es.bifacia.manga.downloader.web.page.manager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import es.bifacia.manga.downloader.Exception.LogException;
 import es.bifacia.manga.downloader.bean.Chapter;
 import es.bifacia.manga.downloader.interfaz.IWebPage;
 import es.bifacia.manga.downloader.jsoup.JSOUPManager;
-import es.bifacia.manga.downloader.utils.FileUtils;
 import es.bifacia.manga.downloader.utils.WebUtils;
 import es.bifacia.manga.downloader.web.html.parser.MangaHereHTMLParser;
 

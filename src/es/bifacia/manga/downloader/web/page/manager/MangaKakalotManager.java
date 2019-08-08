@@ -1,6 +1,5 @@
 package es.bifacia.manga.downloader.web.page.manager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
@@ -9,12 +8,12 @@ import es.bifacia.manga.downloader.Exception.LogException;
 import es.bifacia.manga.downloader.bean.Chapter;
 import es.bifacia.manga.downloader.interfaz.IWebPage;
 import es.bifacia.manga.downloader.jsoup.JSOUPManager;
-import es.bifacia.manga.downloader.utils.WebUtils;
 import es.bifacia.manga.downloader.web.html.parser.MangaKakalotHTMLParser;
 
 public class MangaKakalotManager implements IWebPage {
 	public static final String MAIN_URL = "https://mangakakalot.com";
 	private static final String SEARCH_PATH = "/search/";
+	private static final String URL_ESCAPE_CHARACTER = "_";
 
 	/**
 	 * Obtiene la URL dentro de la página del manga indicado.
@@ -27,7 +26,7 @@ public class MangaKakalotManager implements IWebPage {
 		String url = null;
 		final MangaKakalotHTMLParser parser = new MangaKakalotHTMLParser();
 		try {
-			final String searchURL = MAIN_URL + SEARCH_PATH + mangaTitle;
+			final String searchURL = MAIN_URL + SEARCH_PATH + this.escapeSpecialCharactersForURL(mangaTitle);
 			final Document document = JSOUPManager.getHTMLDocument(searchURL);
 			if (document == null) {
 				throw new LogException(
@@ -39,7 +38,7 @@ public class MangaKakalotManager implements IWebPage {
 			}
 			url = url.trim();
 		} catch (Exception ex) {
-			throw new LogException("Se ha producido un error al intentar obtener la página del manga en MangaHere.",
+			throw new LogException("Se ha producido un error al intentar obtener la página del manga en MangaKakalot.",
 					ex);
 		}
 		return url;
@@ -91,6 +90,21 @@ public class MangaKakalotManager implements IWebPage {
 					"Se ha producido un error al intentar obtener los paths de las páginas del capítulo.", ex);
 		}
 		return pagesPaths;
+	}
+
+	/**
+	 * Escapa los caracteres que puedan provocar problemas a la hora de realizar una
+	 * búsqueda.
+	 * 
+	 * @param value Valor a escapar.
+	 * @return Valor escapado.
+	 */
+	public String escapeSpecialCharactersForURL(final String value) {
+		String newValue = value;
+		newValue = newValue.replaceAll(" ", URL_ESCAPE_CHARACTER);
+		newValue = newValue.replaceAll("'", URL_ESCAPE_CHARACTER);
+		newValue = newValue.replaceAll("\"", URL_ESCAPE_CHARACTER);
+		return newValue;
 	}
 
 }
