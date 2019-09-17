@@ -3,6 +3,7 @@ package es.bifacia.manga.downloader.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -113,6 +114,24 @@ public abstract class FileUtils {
 			extension = "png";
 		}
 		return extension;
+	}
+
+	/**
+	 * Renombra un fichero.
+	 * 
+	 * @param fileOldPath Nombre antiguo del fichero.
+	 * @param fileNewPath Nuevo nombre del fichero.
+	 * @throws IOException
+	 */
+	public static void renameFile(final String fileOldPath, final String fileNewPath) throws IOException {
+		// File (or directory) with old name
+		File file = new File(fileOldPath);
+		// File (or directory) with new name
+		File file2 = new File(fileNewPath);
+		if (file2.exists())
+			throw new IOException("Ya existe un fichero para el nuevo nombre indicado (" + fileNewPath + ")");
+		// Rename file (or directory)
+		file.renameTo(file2);
 	}
 
 }

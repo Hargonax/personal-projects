@@ -17,6 +17,7 @@ public class MangaKakalotHTMLParser {
 	private static final String MANGAS_LIST_CLASS = "panel_story_list";
 	private static final String CHAPTERS_LIST_CLASS = "chapter-list";
 	private static final String PAGES_MAIN_DIV_ID = "vung-doc";
+	private static final String STRING_BEFORE_CHAPTER_NUMBER = "Chapter ";
 
 	public MangaKakalotHTMLParser() {
 		super();
@@ -77,18 +78,18 @@ public class MangaKakalotHTMLParser {
 				throw new LogException(
 						"No se ha encontrado el elemento UL donde está el listado de capítulos del manga.");
 			}
-			final Elements rows = chaptersList.getElementsByAttributeValue(JSOUPManager.BODY_CLASS_ATTRIBUTE, "row");//.select(JSOUPManager.DIV_TAG_NAME);
+			final Elements rows = chaptersList.getElementsByAttributeValue(JSOUPManager.BODY_CLASS_ATTRIBUTE, "row");// .select(JSOUPManager.DIV_TAG_NAME);
 			if (rows == null) {
 				throw new LogException("No se han encontrado resultados para la búsqueda realizada.");
 			}
 			for (int i = 0; i < rows.size(); i++) {
-					final Chapter chapter = this.parseChapter(rows.get(i));
-					if (chapter != null) {
-						chapters.add(chapter);
-					} else {
-						System.out.println(
-								"No se ha obtenido información válida de este capítulo. \n" + rows.get(i).toString());
-					}
+				final Chapter chapter = this.parseChapter(rows.get(i));
+				if (chapter != null) {
+					chapters.add(chapter);
+				} else {
+					System.out.println(
+							"No se ha obtenido información válida de este capítulo. \n" + rows.get(i).toString());
+				}
 			}
 			Collections.sort(chapters);
 		} catch (Exception ex) {
@@ -112,9 +113,6 @@ public class MangaKakalotHTMLParser {
 				final String chapterName = aElement.attr(TITLE_ATTRIBUTE);
 				final String chapterPath = aElement.attr(JSOUPManager.HREF_ATTRIBUTE);
 				if (chapterName != null && !chapterName.isEmpty() && chapterPath != null && !chapterPath.isEmpty()) {
-					if (chapterName.contains("chapter 645")) {
-						chapter = new Chapter();
-					}
 					final float chapterNumber = this.getChapterNumberFromChapterName(chapterName);
 					chapter = new Chapter(chapterNumber, chapterPath);
 					break;
@@ -133,17 +131,21 @@ public class MangaKakalotHTMLParser {
 	 */
 	private float getChapterNumberFromChapterName(final String chapterName) {
 		float chapterNumber = -1;
-		int index = chapterName.indexOf("Chapter ");
+		int index = chapterName.indexOf(STRING_BEFORE_CHAPTER_NUMBER);
 		if (index == -1) {
-			index = chapterName.indexOf("chapter ");
+			index = chapterName.indexOf(STRING_BEFORE_CHAPTER_NUMBER.toLowerCase());
 		}
 		if (index != -1) {
-			int auxIndex = index + 8;
+			index = index + STRING_BEFORE_CHAPTER_NUMBER.length();
+			while (index < chapterName.length() && (chapterName.charAt(index) == ' ')) {
+				index++;
+			}
+			int auxIndex = index;
 			while (auxIndex < chapterName.length() && (chapterName.charAt(auxIndex) == '.'
 					|| (chapterName.charAt(auxIndex) >= '0' && chapterName.charAt(auxIndex) <= '9'))) {
 				auxIndex++;
 			}
-			chapterNumber = Float.parseFloat(chapterName.substring(index + 8, auxIndex));
+			chapterNumber = Float.parseFloat(chapterName.substring(index, auxIndex));
 		}
 		return chapterNumber;
 	}

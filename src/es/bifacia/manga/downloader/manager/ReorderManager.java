@@ -1,11 +1,15 @@
 package es.bifacia.manga.downloader.manager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import es.bifacia.manga.downloader.Exception.LogException;
 import es.bifacia.manga.downloader.bean.ChapterFolder;
@@ -27,7 +31,8 @@ public class ReorderManager {
 	 *                        carpetas de volúmenes.
 	 * @throws LogException
 	 */
-	public void transformChaptersToVolumes(final String originPath, final String destinationPath) throws LogException {
+	public void transformChaptersToVolumes(final String originPath, final String destinationPath,
+			final boolean compress) throws LogException {
 		final File originDirectory = new File(originPath);
 		if (!originDirectory.exists()) {
 			throw new LogException("No existe el directorio de origen " + originPath
@@ -70,6 +75,9 @@ public class ReorderManager {
 				}
 			}
 		}
+		if (compress) {
+			this.compressVolumes(destinationPath);
+		}
 	}
 
 	/**
@@ -88,6 +96,56 @@ public class ReorderManager {
 			}
 		}
 		return chaptersFolders;
+	}
+
+	/**
+	 * Comprime los volúmenes de un manga.
+	 * 
+	 * @param mangaPath Path del manga del que queremos comprimir los volúmenes.
+	 * @throws LogException
+	 */
+	public void compressVolumes(final String mangaPath) throws LogException {
+		final File mangaFile = new File(mangaPath);
+		if (!mangaFile.exists()) {
+			throw new LogException(
+					"No existe la ubicación en la que se encuentran los tomos a comprimir (" + mangaPath + ").");
+		}
+		for (final File volumeFile : mangaFile.listFiles()) {
+			this.compressVolume(mangaPath, volumeFile);
+		}
+	}
+
+	/**
+	 * Comprime el contenido de la carpeta del volumen indicado.
+	 * 
+	 * @param mangaPath  Path del manga al que pertenece el volumen.
+	 * @param volumeFile Fichero con la información del path del volumen.
+	 * @throws LogException
+	 */
+	private void compressVolume(final String mangaPath, final File volumeFile) throws LogException {
+		try {
+			final String volumePath = mangaPath + File.separator + volumeFile.getName();
+			final String zipFilePath = volumePath + ".zip";
+			final String cbzFilePath = volumePath + ".cbz";
+			byte[] buffer = new byte[1024];
+			final FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath);
+			try (final ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
+				final File[] files = volumeFile.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					try (final FileInputStream fileInputStream = new FileInputStream(files[i])) {
+						zipOutputStream.putNextEntry(new ZipEntry(files[i].getName()));
+						int length;
+						while ((length = fileInputStream.read(buffer)) > 0) {
+							zipOutputStream.write(buffer, 0, length);
+						}
+						zipOutputStream.closeEntry();
+					}
+				}
+			}
+			FileUtils.renameFile(zipFilePath, cbzFilePath);
+		} catch (Exception ex) {
+			throw new LogException("Se ha producido un error al generer el fichero cbz del volumen.", ex);
+		}
 	}
 
 }

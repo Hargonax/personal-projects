@@ -104,6 +104,7 @@ public class MangaKakalotManager implements IWebPage {
 		newValue = newValue.replaceAll(" ", URL_ESCAPE_CHARACTER);
 		newValue = newValue.replaceAll("'", URL_ESCAPE_CHARACTER);
 		newValue = newValue.replaceAll("\"", URL_ESCAPE_CHARACTER);
+		newValue = newValue.replaceAll(":", URL_ESCAPE_CHARACTER);
 		return newValue;
 	}
 

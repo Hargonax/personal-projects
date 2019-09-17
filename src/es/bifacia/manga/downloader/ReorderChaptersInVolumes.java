@@ -9,8 +9,9 @@ public class ReorderChaptersInVolumes {
 		try {
 			System.out.println("Comienza la transformación de capítulos a tomos.");
 			final ReorderManager reorderManager = new ReorderManager();
-			reorderManager.transformChaptersToVolumes("C:\\Varios\\Manga\\Watashitachi no Shiawase na Jikan",
-					"C:\\Varios\\Manga\\Transformado");
+//			reorderManager.compressVolumes("C:\\Varios\\Manga\\Cargar en la tablet\\Psyren");
+			reorderManager.transformChaptersToVolumes("C:\\Varios\\Manga\\Me and the Devil Blues",
+					"C:\\Varios\\Manga\\Transformado", true);
 			System.out.println("Ha finalizado la transformación con éxito.");
 		} catch (Exception ex) {
 			System.out.println(

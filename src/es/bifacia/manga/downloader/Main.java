@@ -6,6 +6,7 @@ import java.util.Properties;
 import es.bifacia.manga.downloader.Exception.LogException;
 import es.bifacia.manga.downloader.manager.MainManager;
 import es.bifacia.manga.downloader.utils.ExceptionUtils;
+import es.bifacia.manga.downloader.utils.PropertiesUtils;
 
 public class Main {
 	private static final String PROPERTIES_FILE_NAME = "manga.properties";
@@ -23,22 +24,22 @@ public class Main {
 			try (final InputStream inputStream = loader.getResourceAsStream(PROPERTIES_FILE_NAME)) {
 				properties.load(inputStream);
 			}
-			final String mangaTitle = properties.getProperty(MANGA_TITLE_PROPERTY);
-			if (mangaTitle == null || mangaTitle.isEmpty()) {
+			String mangaTitle = PropertiesUtils.getStringProperty(properties, MANGA_TITLE_PROPERTY);
+			if (mangaTitle == null || mangaTitle.trim().isEmpty()) {
 				throw new LogException(
 						"No se ha indicado en el fichero de propiedades el nombre del manga a descargar.");
 			}
-			final String webPageName = properties.getProperty(WEB_PAGE_NAME_PROPERTY);
+			final String webPageName = PropertiesUtils.getStringProperty(properties, WEB_PAGE_NAME_PROPERTY);
 			if (webPageName == null || webPageName.isEmpty()) {
 				throw new LogException(
 						"No se ha indicado en el fichero de propiedades el nombre de la página de la que se quiere descargar el manga.");
 			}
-			final String workingDirectory = properties.getProperty(WORKING_DIRECTORY_PROPERTY);
+			final String workingDirectory = PropertiesUtils.getStringProperty(properties, WORKING_DIRECTORY_PROPERTY);
 			if (workingDirectory == null || workingDirectory.isEmpty()) {
 				throw new LogException(
 						"No se ha indicado en el fichero de propiedades el directorio donde se quiere descargar el manga.");
 			}
-			final String imagesExtension = properties.getProperty(IMAGES_EXTENSION_PROPERTY);
+			final String imagesExtension = PropertiesUtils.getStringProperty(properties, IMAGES_EXTENSION_PROPERTY);
 			if (imagesExtension == null || imagesExtension.isEmpty()) {
 				throw new LogException(
 						"No se ha indicado en el fichero de propiedades la extensión de las imágenes que se va a descargar.");

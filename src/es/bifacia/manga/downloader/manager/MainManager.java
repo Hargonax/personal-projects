@@ -32,16 +32,21 @@ public class MainManager {
 		FileUtils.createDirectoryIfNeccessary(workingDirectory);
 		final IWebPage webPageManager = this.getWebPageInterface(webPageName);
 		final String mangaURL = webPageManager.getMangaURL(mangaTitle);
+		System.out.println("Obtenemos la información de los capítulos del manga " + mangaTitle + ".");
 		final List<Chapter> chapters = webPageManager.getMangaChapters(mangaURL);
 		if (chapters == null || chapters.isEmpty()) {
 			throw new LogException("No se han obtenido capítulos para el manga.");
 		}
+		System.out.println("Se han encontrado " + chapters.size() + " capítulos.");
+		int i = 1;
 		for (final Chapter chapter : chapters) {
 			final List<String> chapterPagesURLs = webPageManager.getPagesURLs(chapter.getPath());
 			if (chapterPagesURLs == null || chapterPagesURLs.isEmpty()) {
 				throw new LogException("No se han recuperado páginas para el capítulo.");
 			}
 			this.downloadChapterPages(chapterPagesURLs, chapter.getNumber(), workingDirectory, imagesExtension);
+			System.out.println("Descargado capítulo " + i + ".");
+			i++;
 		}
 	}
 
